@@ -42,6 +42,7 @@ Thumbs.db
 
 # FlashRecord generated files
 flashrecord-save/
+captures/
 *.log
 .env
 
