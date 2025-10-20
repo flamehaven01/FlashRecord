@@ -113,8 +113,8 @@ FlashRecord supports **3 configurable command styles**. Choose during first-time
 
 | Command | Action |
 |---------|--------|
-| `#sc` / `sc` | Take screenshot instantly |
-| `sv` | Render most recent recording to GIF |
+| `#sc` | Take screenshot instantly |
+| `#sv` | Render most recent recording to GIF |
 | `help` | Show help menu |
 | `exit` / `quit` / `q` | Exit FlashRecord |
 
