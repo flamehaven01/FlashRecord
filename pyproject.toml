@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "flashrecord"
+version = "0.1.0"
+description = "Fast, simple, easy screen recording and GIF generation"
+authors = ["Flamehaven"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/Flamehaven/flashrecord"
+repository = "https://github.com/Flamehaven/flashrecord"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+pydantic = ">=2.0.0"
+fastapi = ">=0.100.0"
+uvicorn = ">=0.23.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0.0"
+pytest-cov = ">=4.0.0"
+ruff = ">=0.1.0"
+httpx = ">=0.24.0"
+
+[tool.poetry.scripts]
+flashrecord = "flashrecord.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,11 @@
+{
+  "command_style": "numbered",
+  "auto_delete_hours": 24,
+  "hcap_path": "d:\\Sanctum\\hcap-1.5.0\\simple_capture.py",
+  "description": "FlashRecord configuration",
+  "command_style_options": {
+    "numbered": "Fast & simple: 1=start, 2=stop, 3=gif",
+    "vs_vc_vg": "Mnemonics: vs=start, vc=stop, vg=gif",
+    "verbose": "Full words: start, stop, gif"
+  }
+}
