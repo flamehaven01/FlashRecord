@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flashrecord"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fast, simple, easy screen recording and GIF generation"
 authors = ["Flamehaven"]
 license = "MIT"
@@ -18,6 +18,7 @@ python = ">=3.8"
 pydantic = ">=2.0.0"
 fastapi = ">=0.100.0"
 uvicorn = ">=0.23.0"
+pillow = ">=9.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.0.0"
