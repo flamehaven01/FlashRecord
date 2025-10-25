@@ -81,8 +81,8 @@ Choose your preferred style during setup or edit `config.json`:
 
 | Command | Action |
 |---------|--------|
-| `#sc` | Take screenshot instantly |
-| `#sv` | Render recording to GIF |
+| `@sc` | Take screenshot instantly |
+| `@sv` | Render recording to GIF |
 | `help` | Show help menu |
 | `exit` / `quit` / `q` | Exit FlashRecord |
 
@@ -90,7 +90,7 @@ Choose your preferred style during setup or edit `config.json`:
 
 ### Example 1: Quick Screenshot
 ```
-> #sc
+> @sc
 [+] Screenshot: flashrecord-save/screenshot_20251020_143022.png
 ```
 
@@ -101,7 +101,7 @@ Choose your preferred style during setup or edit `config.json`:
 [Do your work...]
 > 2
 [+] Recording stopped
-> 3
+> @sv
 [+] GIF: flashrecord-save/recording_20251020_143045.gif
 ```
 

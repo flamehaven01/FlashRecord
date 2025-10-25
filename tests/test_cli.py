@@ -17,7 +17,8 @@ def test_map_command_universal(cli):
     assert cli.map_command("exit") == ("exit", None)
     assert cli.map_command("quit") == ("exit", None)
     assert cli.map_command("help") == ("help", None)
-    assert cli.map_command("#sc") == ("screenshot", None)
+    assert cli.map_command("@sc") == ("screenshot", None)
+    assert cli.map_command("@sv") == ("gif", None)
 
 
 def test_map_command_numbered(cli):

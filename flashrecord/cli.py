@@ -29,7 +29,7 @@ class FlashRecordCLI:
             "verbose": "[start][stop][gif][claude/gemini/codex]"
         }
         print(f"\n[*] Commands: {help_text.get(style, 'unknown')}")
-        print("[*] Universal: #sc=screenshot #sv=gif help exit\n")
+        print("[*] Universal: @sc=screenshot @sv=gif help exit\n")
 
     def _start_hint(self) -> str:
         """Return start command hint based on the active style."""
@@ -105,9 +105,9 @@ class FlashRecordCLI:
             return ("exit", None)
         if cmd == "help":
             return ("help", None)
-        if cmd in ["#sc"]:
+        if cmd in ["@sc"]:
             return ("screenshot", None)
-        if cmd == "#sv":
+        if cmd == "@sv":
             return ("gif", None)
 
         # Style-specific
