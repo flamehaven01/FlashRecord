@@ -76,6 +76,15 @@ compression_old.py
 # Internal development documentation (not for public release)
 .DEVELOPMENT_ROADMAP.md
 .INTERNAL_*.md
+*_REPORT.md
+*_DIAGNOSIS.md
+*_COMPLETION*.md
+IMPROVEMENT_*.md
+PATCH_*.md
+PNG_*.md
+PRODUCTION_*.md
+DEPLOYMENT.md
+REX_*.md
 
 # Sphinx documentation
 docs/_build/
