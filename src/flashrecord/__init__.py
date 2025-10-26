@@ -1,9 +1,10 @@
 """
-FlashRecord v0.3.0 - Screen Capture & Animated GIF Recording
+FlashRecord v0.3.3 - Screen Capture & Animated GIF Recording
 Simple, fast, standalone screen recording tool
+v0.3.3: PNG compression support
 """
 
-__version__ = "0.3.0"
+__version__ = "0.3.3"
 __author__ = "Flamehaven"
 
 from .cli import FlashRecordCLI

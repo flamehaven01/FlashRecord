@@ -41,10 +41,43 @@ env/
 Thumbs.db
 
 # FlashRecord generated files
-flashrecord-save/
+output/
 captures/
 *.log
 .env
 
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.tox/
+.hypothesis/
+test-results/
+test-reports/
+
 # Configuration
 config.local.json
+
+# Backups and archives
+.archive/
+*_backup.py
+*_before_patch.py
+*_original.py
+compression_old.py
+
+# Non-ASCII filenames (prevent cross-platform issues)
+# Add specific patterns if needed
+*[가-힣]*
+*[ㄱ-ㅎ]*
+*[ㅏ-ㅣ]*
+
+# Internal development documentation (not for public release)
+.DEVELOPMENT_ROADMAP.md
+.INTERNAL_*.md
+
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/

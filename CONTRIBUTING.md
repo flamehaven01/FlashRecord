@@ -385,4 +385,14 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to FlashRecord! 🎉**
+**Thank you for contributing to FlashRecord!**
+
+---
+
+## Additional Resources
+
+- **DEPLOYMENT.md**: Detailed deployment and release instructions
+- **README.md**: User-facing documentation
+- **.DEVELOPMENT_ROADMAP.md**: Future development plans (contributors only)
+
+For questions, open an issue or discussion on GitHub.

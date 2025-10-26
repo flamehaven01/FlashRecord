@@ -1,6 +1,7 @@
 """
 Screen recording to animated GIF
 ScreenToGif-like functionality for FlashRecord v0.3.0
+With KAIROS-inspired compression
 """
 
 import time
@@ -9,21 +10,24 @@ from PIL import ImageGrab
 import imageio
 import threading
 from .utils import get_timestamp
+from .compression import GIFCompressor
 
 
 class ScreenRecorder:
     """Record screen to animated GIF"""
 
-    def __init__(self, fps=10, quality=85):
+    def __init__(self, fps=10, quality=85, compression='balanced'):
         """
         Initialize screen recorder
 
         Args:
             fps: Frames per second (default: 10)
             quality: GIF quality 1-100 (default: 85)
+            compression: 'high', 'balanced', 'compact', or 'none' (default: 'balanced')
         """
         self.fps = fps
         self.quality = quality
+        self.compression_mode = compression
         self.frames = []
         self.is_recording = False
         self._capture_thread = None
@@ -105,7 +109,7 @@ class ScreenRecorder:
 
     def save_gif(self, output_path):
         """
-        Save captured frames as GIF
+        Save captured frames as GIF with KAIROS-inspired compression
 
         Args:
             output_path: Path to save GIF file
@@ -121,10 +125,22 @@ class ScreenRecorder:
             # Ensure directory exists
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
+            # Apply compression if enabled
+            frames_to_save = self.frames
+            if self.compression_mode and self.compression_mode != 'none':
+                compressor = GIFCompressor(target_size_mb=10, quality=self.compression_mode)
+                frames_to_save = compressor.compress_frames(self.frames)
+
+                # Show compression stats
+                stats = compressor.estimate_compression_ratio(self.frames, frames_to_save)
+                if stats:
+                    print(f"[*] Compression: {stats['original_frames']} -> {stats['compressed_frames']} frames")
+                    print(f"[*] Frame reduction: {stats['frame_reduction']}")
+
             # Save as GIF with imageio
             imageio.mimsave(
                 output_path,
-                self.frames,
+                frames_to_save,
                 duration=1000 / self.fps,  # Duration per frame in ms
                 loop=0  # Infinite loop
             )
@@ -153,7 +169,7 @@ class ScreenRecorder:
         }
 
 
-def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save"):
+def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", compression='balanced'):
     """
     Convenience function: Record screen for duration and save as GIF
 
@@ -161,11 +177,12 @@ def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save"):
         duration: Recording duration in seconds (default: 5)
         fps: Frames per second (default: 10)
         output_dir: Output directory (default: flashrecord-save)
+        compression: 'high', 'balanced', 'compact', or 'none' (default: 'balanced')
 
     Returns:
         Path to saved GIF file, or None on failure
     """
-    recorder = ScreenRecorder(fps=fps)
+    recorder = ScreenRecorder(fps=fps, compression=compression)
 
     print(f"[>] Recording screen for {duration} seconds...")
 

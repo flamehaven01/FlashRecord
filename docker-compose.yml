@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  flashrecord:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flamehaven/flashrecord:latest
+    container_name: flashrecord
+    volumes:
+      - ./flashrecord-save:/output
+    environment:
+      - FLASHRECORD_SAVE_DIR=/output
+      - DISPLAY=:99
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+  # Development service with source code mounted
+  flashrecord-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: flamehaven/flashrecord:dev
+    container_name: flashrecord-dev
+    volumes:
+      - .:/app
+      - ./flashrecord-save:/output
+    environment:
+      - FLASHRECORD_SAVE_DIR=/output
+      - PYTHONPATH=/app
+    working_dir: /app
+    command: /bin/bash
+    stdin_open: true
+    tty: true

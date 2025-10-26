@@ -58,10 +58,11 @@ class Config:
 
     def __init__(self, config_file="config.json"):
         self.config_file = config_file
-        self.parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Navigate from src/flashrecord to project root
+        self.parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
         # Setup single flat directory
-        self.save_dir = os.path.join(self.parent_dir, "flashrecord-save")
+        self.save_dir = os.path.join(self.parent_dir, "output")
         os.makedirs(self.save_dir, exist_ok=True)
 
         # Load and validate config
