@@ -361,23 +361,23 @@ FlashRecord is built for developers who need reliable, scriptable screen recordi
 
 ### Development Roadmap
 
-**v0.4.0 - Enhanced Formats** (Planned Q1 2025)
+**v0.4.0 - Enhanced Formats** (Planned Q4 2025)
 - [ ] WebP video format support (smaller than GIF)
 - [ ] MP4 export option (H.264 codec)
 - [ ] PNG sequence export for video editors
 
-**v0.5.0 - GUI & Integration** (Planned Q2 2025)
+**v0.5.0 - GUI & Integration** (Planned Q4 2025)
 - [ ] Gradio web interface for non-CLI users
 - [ ] VSCode extension for in-editor capture
 - [ ] Jupyter notebook integration (`%%flashrecord` magic)
 
-**v0.6.0 - Advanced Features** (Planned Q3 2025)
+**v0.6.0 - Advanced Features** (Planned Q1 2026)
 - [ ] Real-time streaming to Twitch/YouTube
 - [ ] Window-specific capture (not just full screen)
 - [ ] Audio recording integration
 - [ ] Cloud sync (S3/GCS/Azure optional)
 
-**v1.0.0 - Enterprise** (Planned Q4 2025)
+**v1.0.0 - Enterprise** (Planned Q1 2026)
 - [ ] Team collaboration features
 - [ ] Encrypted storage options
 - [ ] REST API server mode
