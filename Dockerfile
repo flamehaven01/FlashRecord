@@ -31,7 +31,7 @@ FROM python:3.11-slim
 
 LABEL maintainer="Flamehaven"
 LABEL description="FlashRecord - Fast screen capture and GIF recording"
-LABEL version="0.3.4"
+LABEL version="0.3.5"
 
 # Set working directory
 WORKDIR /app

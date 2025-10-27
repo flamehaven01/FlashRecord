@@ -1,10 +1,10 @@
 """
-FlashRecord v0.3.4 - Screen Capture & Animated GIF Recording
+FlashRecord v0.3.5 - Screen Capture & Animated GIF Recording
 Simple, fast, standalone screen recording tool
-v0.3.4: Production quality with comprehensive test coverage
+v0.3.5: Production quality with comprehensive test coverage
 """
 
-__version__ = "0.3.4"
+__version__ = "0.3.5"
 __author__ = "Flamehaven"
 
 from .ai_prompt import AIPromptManager

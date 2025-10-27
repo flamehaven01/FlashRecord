@@ -1,7 +1,7 @@
 """
-FlashRecord CLI v0.3.4
+FlashRecord CLI v0.3.5
 Simple screen capture and animated GIF recording
-v0.3.4: Added PNG compression support for @sc command
+v0.3.5: Added PNG compression support for @sc command
 """
 
 from .ai_prompt import AIPromptManager
@@ -20,7 +20,7 @@ class FlashRecordCLI:
 
     def show_help(self):
         """Show help"""
-        print("\n[*] FlashRecord v0.3.4 - Screen Capture & GIF Recording")
+        print("\n[*] FlashRecord v0.3.5 - Screen Capture & GIF Recording")
         print("[*] Commands:")
         print("    @sc           - Take screenshot (PNG, optimized)")
         print("    @sc -c        - Take screenshot (compressed, balanced)")
