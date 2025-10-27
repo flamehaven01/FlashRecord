@@ -24,7 +24,7 @@ class FileManager:
                         os.remove(path)
                         deleted += 1
             return deleted
-        except:
+        except Exception:
             return 0
 
     def get_storage_usage(self):
@@ -35,15 +35,15 @@ class FileManager:
                 for f in files:
                     total += os.path.getsize(os.path.join(root, f))
             return round(total / (1024 * 1024), 2)
-        except:
+        except Exception:
             return 0.0
 
     def get_file_count(self):
         """Count all files"""
         try:
             count = 0
-            for root, _, files in os.walk(self.save_dir):
+            for _root, _, files in os.walk(self.save_dir):
                 count += len(files)
             return count
-        except:
+        except Exception:
             return 0

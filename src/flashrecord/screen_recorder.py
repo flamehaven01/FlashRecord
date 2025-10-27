@@ -4,19 +4,21 @@ ScreenToGif-like functionality for FlashRecord v0.3.0
 With KAIROS-inspired compression
 """
 
-import time
 import os
-from PIL import ImageGrab
-import imageio
 import threading
-from .utils import get_timestamp
+import time
+
+import imageio
+from PIL import ImageGrab
+
 from .compression import GIFCompressor
+from .utils import get_timestamp
 
 
 class ScreenRecorder:
     """Record screen to animated GIF"""
 
-    def __init__(self, fps=10, quality=85, compression='balanced'):
+    def __init__(self, fps=10, quality=85, compression="balanced"):
         """
         Initialize screen recorder
 
@@ -50,9 +52,7 @@ class ScreenRecorder:
 
         # Start capture thread
         self._capture_thread = threading.Thread(
-            target=self._capture_frames,
-            args=(duration,),
-            daemon=True
+            target=self._capture_frames, args=(duration,), daemon=True
         )
         self._capture_thread.start()
         return True
@@ -127,14 +127,16 @@ class ScreenRecorder:
 
             # Apply compression if enabled
             frames_to_save = self.frames
-            if self.compression_mode and self.compression_mode != 'none':
+            if self.compression_mode and self.compression_mode != "none":
                 compressor = GIFCompressor(target_size_mb=10, quality=self.compression_mode)
                 frames_to_save = compressor.compress_frames(self.frames)
 
                 # Show compression stats
                 stats = compressor.estimate_compression_ratio(self.frames, frames_to_save)
                 if stats:
-                    print(f"[*] Compression: {stats['original_frames']} -> {stats['compressed_frames']} frames")
+                    print(
+                        f"[*] Compression: {stats['original_frames']} -> {stats['compressed_frames']} frames"
+                    )
                     print(f"[*] Frame reduction: {stats['frame_reduction']}")
 
             # Save as GIF with imageio
@@ -142,7 +144,7 @@ class ScreenRecorder:
                 output_path,
                 frames_to_save,
                 duration=1000 / self.fps,  # Duration per frame in ms
-                loop=0  # Infinite loop
+                loop=0,  # Infinite loop
             )
 
             return os.path.exists(output_path)
@@ -165,11 +167,11 @@ class ScreenRecorder:
             "frame_count": frame_count,
             "duration": duration,
             "fps": self.fps,
-            "recording": self.is_recording
+            "recording": self.is_recording,
         }
 
 
-def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", compression='balanced'):
+def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", compression="balanced"):
     """
     Convenience function: Record screen for duration and save as GIF
 
@@ -206,13 +208,15 @@ def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", comp
     filepath = os.path.join(output_dir, filename)
 
     # Save GIF
-    print(f"[+] Encoding GIF...")
+    print("[+] Encoding GIF...")
     if recorder.save_gif(filepath):
         stats = recorder.get_stats()
         file_size = os.path.getsize(filepath) / (1024 * 1024)  # MB
 
         print(f"[+] GIF saved: {filepath}")
-        print(f"[+] Size: {file_size:.1f} MB, {stats['frame_count']} frames, {stats['duration']:.1f}s")
+        print(
+            f"[+] Size: {file_size:.1f} MB, {stats['frame_count']} frames, {stats['duration']:.1f}s"
+        )
         return filepath
     else:
         print("[-] Failed to save GIF")

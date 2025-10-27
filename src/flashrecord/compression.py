@@ -19,18 +19,15 @@ Enhanced Edition Improvements:
 - Performance optimizations (9.txt #1)
 """
 
-import os
 import logging
-from typing import List, Tuple, Optional
 from io import BytesIO
+from typing import List, Tuple
+
 import numpy as np
 from PIL import Image, ImageFilter
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(levelname)s] %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -40,7 +37,7 @@ class CWAMInspiredCompressor:
     Implements cross-scale window attention concepts without deep learning
     """
 
-    def __init__(self, target_size_mb=10, quality='balanced', max_memory_mb=1024):
+    def __init__(self, target_size_mb=10, quality="balanced", max_memory_mb=1024):
         """
         Initialize compressor
 
@@ -52,9 +49,9 @@ class CWAMInspiredCompressor:
         self.target_size_mb = target_size_mb
         self.max_memory_mb = max_memory_mb
         self.quality_presets = {
-            'high': 0.70,      # 70% resolution
-            'balanced': 0.50,  # 50% resolution
-            'compact': 0.30    # 30% resolution
+            "high": 0.70,  # 70% resolution
+            "balanced": 0.50,  # 50% resolution
+            "compact": 0.30,  # 30% resolution
         }
         self.scale_factor = self.quality_presets.get(quality, 0.50)
 
@@ -62,7 +59,9 @@ class CWAMInspiredCompressor:
         self.min_colors = 16  # Minimum palette colors
         self.adaptive_tile_enabled = True  # Auto tile size selection
 
-        logger.info(f"Compressor initialized: target={target_size_mb}MB, quality={quality}, scale={self.scale_factor}")
+        logger.info(
+            f"Compressor initialized: target={target_size_mb}MB, quality={quality}, scale={self.scale_factor}"
+        )
 
     def _safe_convert(self, frame: Image.Image, mode: str) -> Image.Image:
         """
@@ -80,7 +79,7 @@ class CWAMInspiredCompressor:
         except Exception as e:
             logger.error(f"Frame conversion failed ({mode}): {e}")
             # Return gray placeholder
-            return Image.new(mode, frame.size, 128 if mode == 'L' else (128, 128, 128))
+            return Image.new(mode, frame.size, 128 if mode == "L" else (128, 128, 128))
 
     def _validate_frames(self, frames: List[Image.Image]) -> bool:
         """
@@ -108,7 +107,9 @@ class CWAMInspiredCompressor:
         w, h = frames[0].size
         estimated_mb = (w * h * 3 * len(frames)) / (1024 * 1024)
         if estimated_mb > self.max_memory_mb:
-            logger.error(f"Estimated memory {estimated_mb:.1f}MB exceeds limit {self.max_memory_mb}MB")
+            logger.error(
+                f"Estimated memory {estimated_mb:.1f}MB exceeds limit {self.max_memory_mb}MB"
+            )
             return False
 
         return True
@@ -145,7 +146,7 @@ class CWAMInspiredCompressor:
 
             # Select tile size
             if score > 0.9:
-                return 8   # High complexity - fine tiles
+                return 8  # High complexity - fine tiles
             elif score > 0.6:
                 return 16  # Medium complexity
             else:
@@ -211,10 +212,7 @@ class CWAMInspiredCompressor:
             for i, frame in enumerate(frames):
                 try:
                     # LANCZOS for high-quality downsampling
-                    scaled_frame = frame.resize(
-                        (new_width, new_height),
-                        Image.Resampling.LANCZOS
-                    )
+                    scaled_frame = frame.resize((new_width, new_height), Image.Resampling.LANCZOS)
                     scaled.append(scaled_frame)
                 except Exception as e:
                     logger.warning(f"Frame {i} resize failed: {e}, using original")
@@ -226,7 +224,9 @@ class CWAMInspiredCompressor:
             logger.error(f"Scale frames failed: {e}")
             return frames
 
-    def _reduce_frame_rate(self, frames: List[Image.Image], target_fps=8, input_fps=None) -> List[Image.Image]:
+    def _reduce_frame_rate(
+        self, frames: List[Image.Image], target_fps=8, input_fps=None
+    ) -> List[Image.Image]:
         """
         Temporal subsampling - reduce frame rate
         Removes temporal redundancy (paper: local redundancy capture)
@@ -251,14 +251,16 @@ class CWAMInspiredCompressor:
         acc, out = 0.0, []
         step = float(fps) / float(target_fps)
 
-        for i, f in enumerate(frames):
+        for _, f in enumerate(frames):
             if acc <= 0.0:
                 out.append(f)
             acc += 1.0
             if acc >= step:
                 acc -= step
 
-        logger.info(f"[*] Temporal subsampling: {len(frames)} -> {len(out)} frames ({fps}fps -> {target_fps}fps)")
+        logger.info(
+            f"[*] Temporal subsampling: {len(frames)} -> {len(out)} frames ({fps}fps -> {target_fps}fps)"
+        )
         return out
 
     def _compute_cw_saliency_maps(self, frames: List[Image.Image]) -> List[np.ndarray]:
@@ -279,7 +281,7 @@ class CWAMInspiredCompressor:
         for idx, frame in enumerate(frames):
             try:
                 # Convert to grayscale for analysis
-                gray = self._safe_convert(frame, 'L')
+                gray = self._safe_convert(frame, "L")
 
                 # Original scale features
                 F = np.array(gray, dtype=np.float32)
@@ -287,7 +289,7 @@ class CWAMInspiredCompressor:
                 # Downscaled features (coarse scale)
                 F_down = np.array(
                     gray.resize((gray.width // 2, gray.height // 2), Image.Resampling.BILINEAR),
-                    dtype=np.float32
+                    dtype=np.float32,
                 )
 
                 # Adaptive tile size selection (9.txt #3)
@@ -295,7 +297,9 @@ class CWAMInspiredCompressor:
 
                 # Compute saliency at both scales
                 S_fine = self._compute_saliency_single_scale(F, tile_size=tile_size)
-                S_coarse = self._compute_saliency_single_scale(F_down, tile_size=max(8, tile_size // 2))
+                S_coarse = self._compute_saliency_single_scale(
+                    F_down, tile_size=max(8, tile_size // 2)
+                )
 
                 # Cross-scale interaction (CWAM core)
                 # Upsample coarse to match fine resolution
@@ -345,8 +349,8 @@ class CWAMInspiredCompressor:
                     x = tx * tile_size
 
                     # Extract tile
-                    tile = img_array[y:y+tile_size, x:x+tile_size]
-                    edge_tile = edges[y:y+tile_size, x:x+tile_size]
+                    tile = img_array[y : y + tile_size, x : x + tile_size]
+                    edge_tile = edges[y : y + tile_size, x : x + tile_size]
 
                     if tile.size < tile_size * tile_size // 4:  # Skip very small tiles
                         continue
@@ -446,7 +450,9 @@ class CWAMInspiredCompressor:
 
             for i in range(1, len(saliency_maps) - 1):
                 # 3-frame window: prev + current + next
-                avg = 0.2 * saliency_maps[i-1] + 0.6 * saliency_maps[i] + 0.2 * saliency_maps[i+1]
+                avg = (
+                    0.2 * saliency_maps[i - 1] + 0.6 * saliency_maps[i] + 0.2 * saliency_maps[i + 1]
+                )
                 smoothed.append(avg)
 
             smoothed.append(saliency_maps[-1])  # Keep last frame as-is
@@ -611,7 +617,7 @@ class CWAMInspiredCompressor:
             # Generate palette using MEDIANCUT
             S = Image.fromarray(sample.reshape(-1, 1, 3).astype(np.uint8))
             q = S.quantize(colors=colors, method=Image.MEDIANCUT, dither=Image.Dither.NONE)
-            pal = np.array(q.getpalette(), dtype=np.uint8)[:colors * 3].tolist()
+            pal = np.array(q.getpalette(), dtype=np.uint8)[: colors * 3].tolist()
             pal += [0] * (768 - len(pal))  # Pad to 768
 
             return pal
@@ -622,7 +628,9 @@ class CWAMInspiredCompressor:
             gray_pal = list(range(256)) * 3
             return gray_pal[:768]
 
-    def _apply_global_palette(self, frames: List[Image.Image], pal: list, dither=True) -> List[Image.Image]:
+    def _apply_global_palette(
+        self, frames: List[Image.Image], pal: list, dither=True
+    ) -> List[Image.Image]:
         """
         Apply global palette to all frames
         REX Engine Patch 3-2 + Fix 5: Correct palette application to prevent black screen
@@ -651,7 +659,7 @@ class CWAMInspiredCompressor:
                     q = self._safe_convert(im, "RGB").quantize(
                         palette=palette_img,
                         colors=colors,
-                        dither=Image.Dither.FLOYDSTEINBERG if dither else Image.Dither.NONE
+                        dither=Image.Dither.FLOYDSTEINBERG if dither else Image.Dither.NONE,
                     )
                     out.append(q)
                 except Exception as e:
@@ -666,7 +674,15 @@ class CWAMInspiredCompressor:
             # Fallback: convert each frame independently
             return [self._safe_convert(f, "P") for f in frames]
 
-    def _encode_gif_bytes(self, frames: List[Image.Image], duration_ms=120, durations_ms=None, loop=0, disposal=2, optimize=False) -> bytes:
+    def _encode_gif_bytes(
+        self,
+        frames: List[Image.Image],
+        duration_ms=120,
+        durations_ms=None,
+        loop=0,
+        disposal=2,
+        optimize=False,
+    ) -> bytes:
         """
         Encode frames to GIF bytes
         REX Engine Patch 3-3 + Fix 5: In-memory GIF encoding with timing preservation
@@ -693,7 +709,7 @@ class CWAMInspiredCompressor:
                 "append_images": frames[1:],
                 "loop": loop,
                 "disposal": disposal,
-                "optimize": optimize  # False prevents palette index corruption
+                "optimize": optimize,  # False prevents palette index corruption
             }
 
             # Use durations list if provided, otherwise use single duration
@@ -709,8 +725,16 @@ class CWAMInspiredCompressor:
             logger.error(f"GIF encoding failed: {e}", exc_info=True)
             raise
 
-    def compress_to_target(self, frames: List[Image.Image], target_mb=10, init_colors=256, min_fps=4,
-                           preserve_timing: bool = True, max_iterations: int = 5, input_fps: int = None):
+    def compress_to_target(
+        self,
+        frames: List[Image.Image],
+        target_mb=10,
+        init_colors=256,
+        min_fps=4,
+        preserve_timing: bool = True,
+        max_iterations: int = 5,
+        input_fps: int = None,
+    ):
         """
         Enhanced target-driven compression with timing preservation
         REX Engine v0.3.2: preserve-timing + extended loop + metadata
@@ -739,7 +763,7 @@ class CWAMInspiredCompressor:
             total_ms = int(round((orig_n / float(fps_in)) * 1000.0))
 
             # REX Engine Fix 7.1: Store original frames to always rescale from source
-            orig_frames = [self._safe_convert(f, 'RGB') for f in frames]
+            orig_frames = [self._safe_convert(f, "RGB") for f in frames]
 
             # Step 1: Preprocessing pipeline
             frames = self._scale_frames(frames)
@@ -769,25 +793,27 @@ class CWAMInspiredCompressor:
                 data = self._encode_gif_bytes(qframes, durations_ms=durations_ms)
                 size_mb = len(data) / (1024 * 1024)
 
-                logger.info(f"[*] Iter {iteration+1}/{max_iterations}: size={size_mb:.3f}MB frames={out_frames} colors={colors} fps_goal={fps} total_ms={sum(durations_ms)}")
+                logger.info(
+                    f"[*] Iter {iteration+1}/{max_iterations}: size={size_mb:.3f}MB frames={out_frames} colors={colors} fps_goal={fps} total_ms={sum(durations_ms)}"
+                )
 
                 # build metadata snapshot
                 meta = {
-                    'iteration': iteration + 1,
-                    'orig_fps': fps_in,
-                    'orig_frames': orig_n,
-                    'frames_out': out_frames,
-                    'colors': colors,
-                    'fps_goal': fps,
-                    'size_mb': round(size_mb, 4),
-                    'total_ms': sum(durations_ms),
-                    'durations_ms': durations_ms
+                    "iteration": iteration + 1,
+                    "orig_fps": fps_in,
+                    "orig_frames": orig_n,
+                    "frames_out": out_frames,
+                    "colors": colors,
+                    "fps_goal": fps,
+                    "size_mb": round(size_mb, 4),
+                    "total_ms": sum(durations_ms),
+                    "durations_ms": durations_ms,
                 }
                 last_meta = meta
 
                 if size_mb <= target_mb:
                     # verification: durations sum within tolerance
-                    meta['preserve_timing_ok'] = abs(total_ms - meta['total_ms']) <= 10
+                    meta["preserve_timing_ok"] = abs(total_ms - meta["total_ms"]) <= 10
                     return data, meta
 
                 # Enhanced adaptive reduction order (8.txt #7)
@@ -795,10 +821,14 @@ class CWAMInspiredCompressor:
 
                 # Early resolution trigger if size ratio is too large (8.txt improvement)
                 if ratio > 1.5 and colors <= max(32, self.min_colors):
-                    logger.info(f"[*] Large size ratio {ratio:.2f}, triggering early resolution reduction")
+                    logger.info(
+                        f"[*] Large size ratio {ratio:.2f}, triggering early resolution reduction"
+                    )
                     prev_scale = self.scale_factor
                     self.scale_factor = max(0.1, self.scale_factor * 0.85)
-                    logger.info(f"[*] Adaptive: reducing resolution {prev_scale:.3f} -> {self.scale_factor:.3f}")
+                    logger.info(
+                        f"[*] Adaptive: reducing resolution {prev_scale:.3f} -> {self.scale_factor:.3f}"
+                    )
 
                     # Re-run from original frames
                     frames = self._scale_frames(orig_frames)
@@ -824,7 +854,9 @@ class CWAMInspiredCompressor:
                     # Final fallback: resolution reduction
                     prev_scale = self.scale_factor
                     self.scale_factor = max(0.1, self.scale_factor * 0.85)
-                    logger.info(f"[*] Adaptive: reducing resolution {prev_scale:.3f} -> {self.scale_factor:.3f}")
+                    logger.info(
+                        f"[*] Adaptive: reducing resolution {prev_scale:.3f} -> {self.scale_factor:.3f}"
+                    )
 
                     # REX Engine Fix 7.1: Re-run from ORIGINAL frames
                     frames = self._scale_frames(orig_frames)
@@ -840,16 +872,16 @@ class CWAMInspiredCompressor:
             # final best-effort return with metadata
             if last_meta is None:
                 last_meta = {
-                    'iteration': iteration,
-                    'orig_fps': fps_in,
-                    'orig_frames': orig_n,
-                    'frames_out': len(qframes),
-                    'colors': colors,
-                    'fps_goal': fps,
-                    'size_mb': round(size_mb, 4),
-                    'total_ms': sum(durations_ms),
-                    'durations_ms': durations_ms,
-                    'preserve_timing_ok': abs(total_ms - sum(durations_ms)) <= 10
+                    "iteration": iteration,
+                    "orig_fps": fps_in,
+                    "orig_frames": orig_n,
+                    "frames_out": len(qframes),
+                    "colors": colors,
+                    "fps_goal": fps,
+                    "size_mb": round(size_mb, 4),
+                    "total_ms": sum(durations_ms),
+                    "durations_ms": durations_ms,
+                    "preserve_timing_ok": abs(total_ms - sum(durations_ms)) <= 10,
                 }
 
             return data, last_meta
@@ -858,8 +890,9 @@ class CWAMInspiredCompressor:
             logger.error(f"Compress to target failed: {e}", exc_info=True)
             raise
 
-    def estimate_compression_ratio(self, original_frames: List[Image.Image],
-                                   compressed_frames: List[Image.Image]) -> dict:
+    def estimate_compression_ratio(
+        self, original_frames: List[Image.Image], compressed_frames: List[Image.Image]
+    ) -> dict:
         """
         Estimate compression metrics
 
@@ -875,12 +908,12 @@ class CWAMInspiredCompressor:
             comp_size = sum(f.size[0] * f.size[1] * 3 for f in compressed_frames)
 
             return {
-                'original_frames': len(original_frames),
-                'compressed_frames': len(compressed_frames),
-                'frame_reduction': f"{(1 - len(compressed_frames)/len(original_frames))*100:.1f}%",
-                'size_reduction_estimate': f"{(1 - comp_size/orig_size)*100:.1f}%",
-                'scale_factor': self.scale_factor,
-                'technique': 'CWAM-inspired cross-window saliency'
+                "original_frames": len(original_frames),
+                "compressed_frames": len(compressed_frames),
+                "frame_reduction": f"{(1 - len(compressed_frames)/len(original_frames))*100:.1f}%",
+                "size_reduction_estimate": f"{(1 - comp_size/orig_size)*100:.1f}%",
+                "scale_factor": self.scale_factor,
+                "technique": "CWAM-inspired cross-window saliency",
             }
         except Exception as e:
             logger.error(f"Estimation failed: {e}")

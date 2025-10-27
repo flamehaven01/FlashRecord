@@ -60,7 +60,7 @@ class AIPromptManager:
             return ""
 
         try:
-            with open(path, "r", encoding="utf-8") as handle:
+            with open(path, encoding="utf-8") as handle:
                 lines = [line.rstrip("\n") for line in handle]
         except Exception:
             return ""

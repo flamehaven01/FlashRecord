@@ -3,8 +3,8 @@ Minimal Setup Wizard - Command style selection only
 Iceberg design: simple surface, minimal code
 """
 
-import os
 import json
+import os
 
 
 class InstallWizard:
@@ -48,7 +48,7 @@ class InstallWizard:
         config = {
             "command_style": style,
             "auto_delete_hours": 24,
-            "hcap_path": "d:\\Sanctum\\hcap-1.5.0\\simple_capture.py"
+            "hcap_path": "d:\\Sanctum\\hcap-1.5.0\\simple_capture.py",
         }
         with open(self.config_path, "w") as f:
             json.dump(config, f, indent=2)

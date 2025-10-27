@@ -5,6 +5,7 @@ Supports Windows, macOS, and Linux platforms
 
 import os
 import sys
+
 from .utils import get_timestamp
 
 
@@ -12,6 +13,7 @@ def _capture_windows():
     """Capture screenshot on Windows using native PIL/Pillow"""
     try:
         from PIL import ImageGrab
+
         return ImageGrab.grab()
     except ImportError:
         return None
@@ -24,18 +26,16 @@ def _capture_macos():
     """Capture screenshot on macOS using screencapture"""
     import subprocess
     import tempfile
+
     try:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
             tmp_path = tmp.name
 
-        result = subprocess.run(
-            ["screencapture", "-x", tmp_path],
-            capture_output=True,
-            timeout=5
-        )
+        result = subprocess.run(["screencapture", "-x", tmp_path], capture_output=True, timeout=5)
 
         if result.returncode == 0 and os.path.exists(tmp_path):
             from PIL import Image
+
             img = Image.open(tmp_path)
             os.unlink(tmp_path)
             return img
@@ -74,6 +74,7 @@ def _capture_linux():
 
             if result.returncode == 0 and os.path.exists(tmp_path):
                 from PIL import Image
+
                 img = Image.open(tmp_path)
                 os.unlink(tmp_path)
                 return img
@@ -83,7 +84,7 @@ def _capture_linux():
     return None
 
 
-def _save_image(img, filepath, compress=False, quality='balanced'):
+def _save_image(img, filepath, compress=False, quality="balanced"):
     """
     Save PIL Image to file with optional compression
 
@@ -106,10 +107,11 @@ def _save_image(img, filepath, compress=False, quality='balanced'):
         # Apply compression if requested
         if compress:
             from PIL import Image
+
             scale_factors = {
-                'high': 0.70,      # 70% - minimal quality loss
-                'balanced': 0.50,  # 50% - good balance
-                'compact': 0.30    # 30% - maximum compression
+                "high": 0.70,  # 70% - minimal quality loss
+                "balanced": 0.50,  # 50% - good balance
+                "compact": 0.30,  # 30% - maximum compression
             }
             scale = scale_factors.get(quality, 0.50)
 
@@ -132,7 +134,7 @@ def _save_image(img, filepath, compress=False, quality='balanced'):
         return False
 
 
-def take_screenshot(output_dir="flashrecord-save", compress=False, quality='balanced'):
+def take_screenshot(output_dir="flashrecord-save", compress=False, quality="balanced"):
     """
     Take screenshot natively without external dependencies
 

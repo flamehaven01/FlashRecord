@@ -3,19 +3,17 @@ FastAPI Server - Expose CLI functionality as REST API
 Auto-generated Swagger documentation at /docs
 """
 
+from typing import Optional
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
-import json
 
 from .cli import FlashRecordCLI
 from .config import Config
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="FlashRecord API",
-    description="Screen recording and GIF generation API",
-    version="0.1.0"
+    title="FlashRecord API", description="Screen recording and GIF generation API", version="0.1.0"
 )
 
 # Global CLI instance
@@ -25,6 +23,7 @@ cli = FlashRecordCLI()
 # Response Models
 class CommandResponse(BaseModel):
     """Response from command execution"""
+
     success: bool
     action: str
     message: str
@@ -33,6 +32,7 @@ class CommandResponse(BaseModel):
 
 class ConfigResponse(BaseModel):
     """Configuration info"""
+
     command_style: str
     auto_delete_hours: int
     save_dir: str
@@ -43,6 +43,7 @@ class ConfigResponse(BaseModel):
 
 class StatusResponse(BaseModel):
     """System status"""
+
     is_recording: bool
     recording_file: Optional[str] = None
     config: ConfigResponse
@@ -60,8 +61,8 @@ async def root():
             "config": "/config",
             "status": "/status",
             "screenshot": "/screenshot",
-            "recording": "/recording"
-        }
+            "recording": "/recording",
+        },
     }
 
 
@@ -74,7 +75,7 @@ async def get_config():
         save_dir=cli.config.save_dir,
         screenshot_dir=cli.config.screenshot_dir,
         video_dir=cli.config.video_dir,
-        gif_dir=cli.config.gif_dir
+        gif_dir=cli.config.gif_dir,
     )
 
 
@@ -83,9 +84,7 @@ async def get_status():
     """Get current system status"""
     config = await get_config()
     return StatusResponse(
-        is_recording=cli.recording,
-        recording_file=cli.recording_file,
-        config=config
+        is_recording=cli.recording, recording_file=cli.recording_file, config=config
     )
 
 
@@ -93,18 +92,18 @@ async def get_status():
 async def take_screenshot():
     """Take a screenshot"""
     try:
-        result = cli.handle_command("screenshot", None)
+        cli.handle_command("screenshot", None)
         if cli.recording_file:
             return CommandResponse(
                 success=True,
                 action="screenshot",
                 message="Screenshot taken successfully",
-                result={"path": cli.recording_file}
+                result={"path": cli.recording_file},
             )
         else:
             raise HTTPException(status_code=400, detail="Screenshot failed")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/recording/start", response_model=CommandResponse, tags=["Recording"])
@@ -116,10 +115,10 @@ async def start_recording():
             success=True,
             action="start_recording",
             message="Recording started",
-            result={"path": cli.recording_file}
+            result={"path": cli.recording_file},
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/recording/stop", response_model=CommandResponse, tags=["Recording"])
@@ -133,10 +132,10 @@ async def stop_recording():
             success=True,
             action="stop_recording",
             message="Recording stopped",
-            result={"path": cli.recording_file}
+            result={"path": cli.recording_file},
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/recording/gif", response_model=CommandResponse, tags=["Recording"])
@@ -147,12 +146,10 @@ async def convert_to_gif():
             raise HTTPException(status_code=400, detail="No recording to convert")
         cli.handle_command("gif", None)
         return CommandResponse(
-            success=True,
-            action="convert_to_gif",
-            message="GIF conversion completed"
+            success=True, action="convert_to_gif", message="GIF conversion completed"
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/save/{ai_model}", response_model=CommandResponse, tags=["Save"])
@@ -164,10 +161,10 @@ async def save_session(ai_model: str):
             success=True,
             action="save_session",
             message=f"Session saved to {ai_model}.md",
-            result={"model": ai_model}
+            result={"model": ai_model},
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.get("/config/schema", tags=["Configuration"])
@@ -179,4 +176,5 @@ async def get_config_schema():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

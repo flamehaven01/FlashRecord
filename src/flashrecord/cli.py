@@ -4,11 +4,11 @@ Simple screen capture and animated GIF recording
 v0.3.3: Added PNG compression support for @sc command
 """
 
-from .screenshot import take_screenshot
-from .screen_recorder import record_screen_to_gif
 from .ai_prompt import AIPromptManager
 from .config import Config
 from .install import run_setup_if_needed
+from .screen_recorder import record_screen_to_gif
+from .screenshot import take_screenshot
 
 
 class FlashRecordCLI:
@@ -47,7 +47,7 @@ class FlashRecordCLI:
             print(content.strip())
             print("")
 
-    def handle_screenshot(self, compress=False, quality='balanced'):
+    def handle_screenshot(self, compress=False, quality="balanced"):
         """
         Handle @sc command with optional compression
 
@@ -58,9 +58,9 @@ class FlashRecordCLI:
         # Show compression info if enabled
         if compress:
             quality_info = {
-                'high': '70% scale, ~50% size reduction',
-                'balanced': '50% scale, ~75% size reduction',
-                'compact': '30% scale, ~90% size reduction'
+                "high": "70% scale, ~50% size reduction",
+                "balanced": "50% scale, ~75% size reduction",
+                "compact": "30% scale, ~90% size reduction",
             }
             print(f"[*] Compression: {quality} ({quality_info.get(quality, 'balanced')})")
 
@@ -82,11 +82,11 @@ class FlashRecordCLI:
         parts = cmd.strip().lower().split()
 
         compress = False
-        quality = 'balanced'
+        quality = "balanced"
 
-        if len(parts) >= 2 and parts[1] == '-c':
+        if len(parts) >= 2 and parts[1] == "-c":
             compress = True
-            if len(parts) >= 3 and parts[2] in ['high', 'balanced', 'compact']:
+            if len(parts) >= 3 and parts[2] in ["high", "balanced", "compact"]:
                 quality = parts[2]
 
         self.handle_screenshot(compress=compress, quality=quality)
@@ -97,13 +97,9 @@ class FlashRecordCLI:
             # Ask if user wants to change defaults
             change = input("[?] Auto mode/5sec/10fps - Change settings? (y/n): ").strip().lower()
 
-            if change != 'y':
+            if change != "y":
                 # Quick mode: use defaults
-                result = record_screen_to_gif(
-                    duration=5,
-                    fps=10,
-                    output_dir=self.config.save_dir
-                )
+                result = record_screen_to_gif(duration=5, fps=10, output_dir=self.config.save_dir)
                 if not result:
                     print("[-] GIF recording failed")
                 return
@@ -114,7 +110,7 @@ class FlashRecordCLI:
             print("    2 - Manual mode (start/stop control)")
             mode = input("[?] Select (1-2): ").strip()
 
-            if mode == '2':
+            if mode == "2":
                 # Manual mode
                 self._manual_recording_mode()
             else:
@@ -135,7 +131,7 @@ class FlashRecordCLI:
         print("    3 - 10 seconds")
         duration_choice = input("[?] Select (1-3): ").strip()
 
-        duration_map = {'1': 5, '2': 7, '3': 10}
+        duration_map = {"1": 5, "2": 7, "3": 10}
         duration = duration_map.get(duration_choice, 5)
 
         # FPS selection
@@ -145,24 +141,21 @@ class FlashRecordCLI:
         print("    3 - 30 fps (smoother)")
         fps_choice = input("[?] Select (1-3): ").strip()
 
-        fps_map = {'1': 10, '2': 20, '3': 30}
+        fps_map = {"1": 10, "2": 20, "3": 30}
         fps = fps_map.get(fps_choice, 10)
 
         # Record
         print(f"\n[>] Auto mode: {duration}sec, {fps}fps")
-        result = record_screen_to_gif(
-            duration=duration,
-            fps=fps,
-            output_dir=self.config.save_dir
-        )
+        result = record_screen_to_gif(duration=duration, fps=fps, output_dir=self.config.save_dir)
 
         if not result:
             print("[-] GIF recording failed")
 
     def _manual_recording_mode(self):
         """Manual mode with start/stop control"""
-        from .screen_recorder import ScreenRecorder
         import os
+
+        from .screen_recorder import ScreenRecorder
         from .utils import get_timestamp
 
         print("\n[*] Manual Recording Mode")
@@ -177,29 +170,31 @@ class FlashRecordCLI:
         while True:
             cmd = input("\n> ").strip()
 
-            if cmd == '1':
+            if cmd == "1":
                 if recorder.is_recording:
                     print("[-] Already recording")
                 else:
                     recorder.start_recording(duration=None)  # No auto-stop
                     print("[>] Recording started... (Press 2 to stop)")
 
-            elif cmd == '2':
+            elif cmd == "2":
                 if not recorder.is_recording:
                     print("[-] Not recording")
                 else:
                     recorder.stop_recording()
                     stats = recorder.get_stats()
-                    print(f"[+] Recording stopped. {stats['frame_count']} frames captured ({stats['duration']:.1f}s)")
+                    print(
+                        f"[+] Recording stopped. {stats['frame_count']} frames captured ({stats['duration']:.1f}s)"
+                    )
                     print("[*] Commands: 3-Record again, 4-Save and exit")
 
-            elif cmd == '3':
+            elif cmd == "3":
                 if recorder.is_recording:
                     recorder.stop_recording()
                 recorder.frames = []
                 print("[*] Ready to record again. Press 1 to start.")
 
-            elif cmd == '4':
+            elif cmd == "4":
                 if recorder.is_recording:
                     recorder.stop_recording()
 
@@ -217,7 +212,9 @@ class FlashRecordCLI:
                     stats = recorder.get_stats()
                     file_size = os.path.getsize(filepath) / (1024 * 1024)  # MB
                     print(f"[+] GIF saved: {filepath}")
-                    print(f"[+] Size: {file_size:.1f} MB, {stats['frame_count']} frames, {stats['duration']:.1f}s")
+                    print(
+                        f"[+] Size: {file_size:.1f} MB, {stats['frame_count']} frames, {stats['duration']:.1f}s"
+                    )
                 else:
                     print("[-] Failed to save GIF")
                 break

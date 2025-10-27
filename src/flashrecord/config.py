@@ -2,11 +2,12 @@
 Pydantic-based Configuration - Type-safe, validated settings
 """
 
-import os
 import json
-from typing import Literal
+import os
 from pathlib import Path
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class FlashRecordConfig(BaseModel):
@@ -14,16 +15,14 @@ class FlashRecordConfig(BaseModel):
 
     command_style: Literal["numbered", "vs_vc_vg", "verbose"] = Field(
         default="numbered",
-        description="Command input style: numbered (1,2,3), abbreviation (vs,vc,vg), or full words"
+        description="Command input style: numbered (1,2,3), abbreviation (vs,vc,vg), or full words",
     )
     auto_delete_hours: int = Field(
-        default=24,
-        ge=0,
-        description="Auto-delete files older than N hours (0=disabled)"
+        default=24, ge=0, description="Auto-delete files older than N hours (0=disabled)"
     )
     hcap_path: str = Field(
         default="d:\\Sanctum\\hcap-1.5.0\\simple_capture.py",
-        description="Path to hcap screenshot tool"
+        description="Path to hcap screenshot tool",
     )
 
     @field_validator("command_style")
@@ -47,7 +46,7 @@ class FlashRecordConfig(BaseModel):
             "example": {
                 "command_style": "numbered",
                 "auto_delete_hours": 24,
-                "hcap_path": "d:\\Sanctum\\hcap-1.5.0\\simple_capture.py"
+                "hcap_path": "d:\\Sanctum\\hcap-1.5.0\\simple_capture.py",
             }
         }
     )
@@ -59,7 +58,9 @@ class Config:
     def __init__(self, config_file="config.json"):
         self.config_file = config_file
         # Navigate from src/flashrecord to project root
-        self.parent_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.parent_dir = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
 
         # Setup single flat directory
         self.save_dir = os.path.join(self.parent_dir, "output")
@@ -73,7 +74,7 @@ class Config:
         """Load and validate configuration"""
         try:
             if os.path.exists(self.config_file):
-                with open(self.config_file, "r") as f:
+                with open(self.config_file) as f:
                     data = json.load(f)
                     return FlashRecordConfig(**data)
         except json.JSONDecodeError:
@@ -93,11 +94,7 @@ class Config:
         """Save current configuration"""
         try:
             with open(self.config_file, "w") as f:
-                json.dump(
-                    json.loads(self._config.model_dump_json()),
-                    f,
-                    indent=2
-                )
+                json.dump(json.loads(self._config.model_dump_json()), f, indent=2)
         except Exception as e:
             print(f"[-] Config save error: {str(e)}")
 
