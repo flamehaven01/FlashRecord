@@ -21,7 +21,7 @@ Enhanced Edition Improvements:
 
 import logging
 from io import BytesIO
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 from PIL import Image, ImageFilter
