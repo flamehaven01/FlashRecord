@@ -85,7 +85,7 @@ class AIPromptManager:
             return "\n".join(instructions).strip()
 
         # Fallback to `## Instructions` section
-        instructions: List[str] = []
+        instructions = []
         capture_section = False
         for line in lines:
             stripped = line.strip()

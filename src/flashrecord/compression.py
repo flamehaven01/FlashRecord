@@ -21,7 +21,7 @@ Enhanced Edition Improvements:
 
 import logging
 from io import BytesIO
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
 from PIL import Image, ImageFilter
@@ -303,7 +303,7 @@ class CWAMInspiredCompressor:
 
                 # Cross-scale interaction (CWAM core)
                 # Upsample coarse to match fine resolution
-                S_coarse_up = self._upsample_saliency(S_coarse, S_fine.shape)
+                S_coarse_up = self._upsample_saliency(S_coarse, S_fine.shape)  # type: ignore[arg-type]
 
                 # Combine: weighted sum (cross-window attention approximation)
                 S_combined = 0.6 * S_fine + 0.4 * S_coarse_up
@@ -494,7 +494,7 @@ class CWAMInspiredCompressor:
                 keep[:] = False
                 keep[idx] = True
 
-            return keep
+            return keep  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(f"Saliency masking failed: {e}")
@@ -616,11 +616,11 @@ class CWAMInspiredCompressor:
 
             # Generate palette using MEDIANCUT
             S = Image.fromarray(sample.reshape(-1, 1, 3).astype(np.uint8))
-            q = S.quantize(colors=colors, method=Image.MEDIANCUT, dither=Image.Dither.NONE)
+            q = S.quantize(colors=colors, method=Image.MEDIANCUT, dither=Image.Dither.NONE)  # type: ignore[attr-defined]
             pal = np.array(q.getpalette(), dtype=np.uint8)[: colors * 3].tolist()
             pal += [0] * (768 - len(pal))  # Pad to 768
 
-            return pal
+            return pal  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(f"Palette building failed: {e}", exc_info=True)
@@ -733,7 +733,7 @@ class CWAMInspiredCompressor:
         min_fps=4,
         preserve_timing: bool = True,
         max_iterations: int = 5,
-        input_fps: int = None,
+        input_fps: Optional[int] = None,
     ):
         """
         Enhanced target-driven compression with timing preservation

@@ -156,7 +156,7 @@ async def convert_to_gif():
 async def save_session(ai_model: str):
     """Save session to AI model file"""
     try:
-        cli.handle_command("save", ai_model)
+        cli.handle_command("save", ai_model)  # type: ignore[attr-defined]
         return CommandResponse(
             success=True,
             action="save_session",
