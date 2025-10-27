@@ -1,0 +1,14 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include requirements.txt
+
+recursive-include src/flashrecord *.py
+recursive-exclude tests *
+recursive-exclude tests_backup *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+prune tests
+prune tests_backup
+prune .github
