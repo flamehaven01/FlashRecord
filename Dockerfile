@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir poetry
 
 # Copy project files
 COPY pyproject.toml poetry.lock* ./
-COPY flashrecord ./flashrecord
+COPY src/flashrecord ./flashrecord
 COPY README.md ./
 
 # Configure poetry to not create virtual env
@@ -31,7 +31,7 @@ FROM python:3.11-slim
 
 LABEL maintainer="Flamehaven"
 LABEL description="FlashRecord - Fast screen capture and GIF recording"
-LABEL version="0.3.3"
+LABEL version="0.3.4"
 
 # Set working directory
 WORKDIR /app
