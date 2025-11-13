@@ -1,8 +1,8 @@
 # FlashRecord Vision Document
 
-**Version**: 0.3.3
-**Date**: 2025-10-26
-**Status**: Production Ready
+**Version**: 0.3.4
+**Date**: 2025-11-13
+**Status**: Production Ready (Doc Automation Sprint)
 
 ---
 
@@ -11,6 +11,13 @@
 FlashRecord is the **fastest, simplest screen capture tool for developers** - a Python-first CLI tool that prioritizes automation, scripting, and cross-platform consistency over GUI features.
 
 Our mission: Become the Python ecosystem's go-to tool for screen capture automation, filling the gap left by GUI-centric tools that don't integrate with developer workflows.
+
+### Executive Snapshot (Nov 2025)
+
+- **Documentation Automation**: `scripts/doc_sanity_check.py` + `scripts/build_docs.py` keep Markdown + Sphinx output healthy and CI-ready.
+- **Structured Output Tree**: All media now lands under `output/<date>/<category>` for easy archival and cleanup.
+- **Environment-first Configuration**: `FLASHRECORD_*` variables override `config.json`, keeping secrets out of disks.
+- **Legacy Compression Archived**: v0.3.2-era compression modules moved to `.archive`, keeping `src/` lean.
 
 ---
 

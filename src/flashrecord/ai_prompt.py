@@ -10,7 +10,11 @@ from typing import Dict, List
 class AIPromptManager:
     """Minimal session saving"""
 
-    def __init__(self, save_dir="flashrecord-save"):
+    def __init__(self, save_dir=None):
+        if save_dir is None:
+            from .config import Config
+
+            save_dir = Config().get_output_dir("sessions")
         self.save_dir = save_dir
         os.makedirs(save_dir, exist_ok=True)
         self.ai_files = {

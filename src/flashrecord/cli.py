@@ -16,7 +16,7 @@ class FlashRecordCLI:
 
     def __init__(self):
         self.config = Config()
-        self.ai_manager = AIPromptManager()
+        self.ai_manager = AIPromptManager(save_dir=self.config.session_dir)
 
     def show_help(self):
         """Show help"""
@@ -64,7 +64,8 @@ class FlashRecordCLI:
             }
             print(f"[*] Compression: {quality} ({quality_info.get(quality, 'balanced')})")
 
-        result = take_screenshot(compress=compress, quality=quality)
+        target_dir = self.config.get_output_dir("screenshots")
+        result = take_screenshot(output_dir=target_dir, compress=compress, quality=quality)
         if result:
             print(f"[+] Screenshot: {result}")
         else:
@@ -99,7 +100,8 @@ class FlashRecordCLI:
 
             if change != "y":
                 # Quick mode: use defaults
-                result = record_screen_to_gif(duration=5, fps=10, output_dir=self.config.save_dir)
+                gif_dir = self.config.get_output_dir("gifs")
+                result = record_screen_to_gif(duration=5, fps=10, output_dir=gif_dir)
                 if not result:
                     print("[-] GIF recording failed")
                 return
@@ -146,7 +148,8 @@ class FlashRecordCLI:
 
         # Record
         print(f"\n[>] Auto mode: {duration}sec, {fps}fps")
-        result = record_screen_to_gif(duration=duration, fps=fps, output_dir=self.config.save_dir)
+        gif_dir = self.config.get_output_dir("gifs")
+        result = record_screen_to_gif(duration=duration, fps=fps, output_dir=gif_dir)
 
         if not result:
             print("[-] GIF recording failed")
@@ -205,7 +208,8 @@ class FlashRecordCLI:
                 # Save GIF
                 timestamp = get_timestamp()
                 filename = f"screen_{timestamp}.gif"
-                filepath = os.path.join(self.config.save_dir, filename)
+                gif_dir = self.config.get_output_dir("gifs")
+                filepath = os.path.join(gif_dir, filename)
 
                 print("[+] Encoding GIF...")
                 if recorder.save_gif(filepath):
@@ -245,7 +249,7 @@ class FlashRecordCLI:
         run_setup_if_needed()
         self.show_help()
         self._display_instruction_notes()
-        print(f"[*] Save directory: {self.config.save_dir}\n")
+        print(f"[*] Output root: {self.config.output_root}\n")
 
         while True:
             try:

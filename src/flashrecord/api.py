@@ -35,6 +35,7 @@ class ConfigResponse(BaseModel):
 
     command_style: str
     auto_delete_hours: int
+    output_root: str
     save_dir: str
     screenshot_dir: str
     video_dir: str
@@ -72,6 +73,7 @@ async def get_config():
     return ConfigResponse(
         command_style=cli.config.command_style,
         auto_delete_hours=cli.config.auto_delete_hours,
+        output_root=cli.config.output_root,
         save_dir=cli.config.save_dir,
         screenshot_dir=cli.config.screenshot_dir,
         video_dir=cli.config.video_dir,

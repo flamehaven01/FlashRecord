@@ -134,7 +134,7 @@ def _save_image(img, filepath, compress=False, quality="balanced"):
         return False
 
 
-def take_screenshot(output_dir="flashrecord-save", compress=False, quality="balanced"):
+def take_screenshot(output_dir=None, compress=False, quality="balanced"):
     """
     Take screenshot natively without external dependencies
 
@@ -164,6 +164,11 @@ def take_screenshot(output_dir="flashrecord-save", compress=False, quality="bala
         take_screenshot(compress=True, quality='high')  # high quality (1.2 MB)
     """
     try:
+        if output_dir is None:
+            from .config import Config
+
+            output_dir = Config().get_output_dir("screenshots")
+
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
 

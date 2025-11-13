@@ -26,6 +26,19 @@ A lightweight CLI tool for instant screen capture, GIF recording, and AI session
 
 **Key Differentiator**: FlashRecord is the only Python-native, cross-platform screen recorder with direct scripting integration. Perfect for test automation, documentation workflows, and CI/CD pipelines.
 
+### FlashRecord vs charmbracelet/vhs
+
+| Topic | FlashRecord | charmbracelet/vhs |
+| --- | --- | --- |
+| Primary focus | General-purpose screenshots + GIF capture with built-in compression and AI logging. | Scripted terminal demos rendered from `.tape` files. |
+| Installation | Pure Python (`pip install flashrecord`). | Distribution-specific binaries (`brew install vhs`, manual download). |
+| Automation model | Imperative CLI commands (`@sc`, `@sv`, `vs/vc/vg`) or direct Python APIs inside tests/CI. | Declarative “tapes” that replay deterministic terminal sessions. |
+| Output types | PNG screenshots, highly compressed GIFs. | GIF, MP4, WebM, WebP, APNG. |
+| AI workflow | `AIPromptManager` stores Claude/Gemini/Codex notes next to media. | No AI logging; focuses solely on terminal playback. |
+| Ideal use cases | Regression evidence, documentation snippets, bug repros, AI prompt journaling. | Tutorials or onboarding flows captured from scripted terminals. |
+
+If you already maintain `.tape` files to showcase terminal flows, VHS is fantastic. Use FlashRecord when you need ad-hoc captures, Python-native automation hooks, or AI session bookkeeping alongside your media artifacts.
+
 ## Features
 
 - **Native Screenshot** - Instant screen capture with Pillow/PIL (no external tools needed)
@@ -173,17 +186,28 @@ gif_path = record_screen_to_gif(
 
 ## File Organization
 
-All files save to **`output/`** (flat structure):
+All media is stored inside **`output/<YYYYMMDD>/...`**:
 
 ```
 output/
-├── screenshot_*.png        # Screenshots (@sc command)
-├── screen_*.gif            # Screen recordings (@sv command)
-├── claude.md               # Claude sessions
-├── gemini.md               # Gemini sessions
-├── codex.md                # Codex sessions
-└── general.md              # General sessions
+└── 20251113/
+    ├── screenshots/        # PNGs produced by @sc
+    ├── gifs/               # GIFs produced by @sv
+    ├── sessions/           # claude.md / gemini.md / codex.md / general.md
+    └── captures/           # Reserved for raw captures
 ```
+
+Each CLI run creates the subfolders it needs for the current day so you can archive or purge entire runs quickly.
+
+## AI Prompt Logging (AIPromptManager)
+
+FlashRecord includes a tiny helper named `AIPromptManager` that keeps AI-specific metadata decoupled from the capture stack:
+
+1. **Session journaling** – Pressing the `claude`, `gemini`, or `codex` commands (or calling the API) appends ISO timestamps to the respective markdown files inside `output/`. This gives you an audit trail that links each capture with the AI assistant that reviewed it.
+2. **Reusable instructions** – Each markdown file can include an instruction block wrapped in `<!-- instructions:start --> … <!-- instructions:end -->` or under a `## Instructions` heading. `get_instruction_notes()` reads those snippets so your scripts can re-send consistent prompts to Claude, Gemini, Codex, or any other LLM.
+3. **Opt-in workflow** – If you do not care about AI logging, simply skip those commands. Screenshots and GIFs continue to work exactly the same; the prompt manager only runs when you invoke the AI-related shortcuts.
+
+This design keeps the screen-recording core lean while still supporting teams that want lightweight prompt hygiene next to their media artifacts.
 
 ## Configuration
 
@@ -198,6 +222,29 @@ Edit `config.json` to customize:
 
 - **command_style**: `"numbered"`, `"vs_vc_vg"`, or `"verbose"`
 - **auto_delete_hours**: Auto-delete files older than N hours (0 = disabled)
+
+## Documentation Sanity Check
+
+To prevent broken links or accidental Korean-language bleed-through, run the automated doc audit before releases:
+
+```bash
+python scripts/doc_sanity_check.py
+```
+
+The script inspects `README.md`, `CONTRIBUTING.md`, and every Markdown file under `docs/` (you can pass custom paths). It fails when:
+
+- A Markdown link points to a file that does not exist in the repository.
+- A line contains Hangul characters (helps keep public docs English-only).
+
+Integrate this command into your pre-commit or CI workflow to catch documentation drift early.
+
+To produce the Sphinx documentation bundle (which pulls in the refreshed reports) run:
+
+```bash
+python scripts/build_docs.py
+```
+
+This wraps `sphinx-build -b html docs docs/_build/html` and is CI-friendly.
 
 ## Instruction Notes
 
@@ -308,7 +355,7 @@ cli.run()
 ```python
 from flashrecord.screenshot import take_screenshot
 
-path = take_screenshot()  # Saves to flashrecord-save/screenshot_*.png
+path = take_screenshot()  # Saves to output/<date>/screenshots/screenshot_*.png
 ```
 
 ### Screen Recorder (GIF)
@@ -320,9 +367,9 @@ gif_path = record_screen_to_gif(
     duration=5,           # seconds
     fps=10,               # frames per second
     compression='balanced',  # 'high', 'balanced', 'compact'
-    output_dir='flashrecord-save'
+    output_dir='output/20251113/gifs'
 )
-# Returns: flashrecord-save/screen_20251025_143045.gif
+# Returns: output/20251113/gifs/screen_20251025_143045.gif
 ```
 
 ### Configuration
@@ -330,10 +377,23 @@ gif_path = record_screen_to_gif(
 from flashrecord.config import Config
 
 config = Config()
-print(config.save_dir)           # Output directory
+print(config.save_dir)           # Default GIF directory
 print(config.command_style)      # Current command style
 print(config.auto_delete_hours)  # Auto-cleanup threshold
 ```
+
+#### Environment-first overrides
+
+FlashRecord now prefers environment variables over editing `config.json`:
+
+| Variable | Purpose | Example |
+| --- | --- | --- |
+| `FLASHRECORD_COMMAND_STYLE` | Override CLI style (`numbered`, `vs_vc_vg`, `verbose`). | `FLASHRECORD_COMMAND_STYLE=vs_vc_vg` |
+| `FLASHRECORD_AUTO_DELETE_HOURS` | Auto-cleanup window (hours). | `FLASHRECORD_AUTO_DELETE_HOURS=48` |
+| `FLASHRECORD_OUTPUT_ROOT` | Base directory for dated folders. | `FLASHRECORD_OUTPUT_ROOT=/mnt/artifacts/flashrecord` |
+| `FLASHRECORD_HCAP_PATH` | Optional legacy hcap path if you still rely on it. | `FLASHRECORD_HCAP_PATH=/opt/hcap/simple_capture.py` |
+
+Add them to your shell profile or `.env` file (then `dotenv`/CI will inject them) and FlashRecord will load them automatically. The `config.json` file remains optional for local overrides but should never store secrets—use environment variables instead.
 
 ### AI Session Manager
 ```python

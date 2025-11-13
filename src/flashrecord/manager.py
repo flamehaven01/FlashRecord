@@ -4,12 +4,18 @@ Minimal File Manager - Auto-cleanup old files
 
 import os
 import time
+from typing import Optional
 
 
 class FileManager:
     """Minimal file lifecycle management"""
 
-    def __init__(self, save_dir="flashrecord-save"):
+    def __init__(self, save_dir: Optional[str] = None):
+        if save_dir is None:
+            from .config import Config
+
+            config = Config()
+            save_dir = config.output_root
         self.save_dir = save_dir
 
     def cleanup_old_files(self, hours=24):

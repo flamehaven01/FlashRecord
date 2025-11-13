@@ -67,12 +67,7 @@ config.local.json
 *_original.py
 compression_old.py
 
-# Non-ASCII filenames (prevent cross-platform issues)
-# Add specific patterns if needed
-*[가-힣]*
-*[ㄱ-ㅎ]*
-*[ㅏ-ㅣ]*
-
+# Non-ASCII filename guardrails (add repo-specific patterns if required)
 # Internal development documentation (not for public release)
 .DEVELOPMENT_ROADMAP.md
 .INTERNAL_*.md

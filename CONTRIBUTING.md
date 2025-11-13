@@ -267,7 +267,7 @@ flashrecord/
 │   ├── test_manager.py
 │   ├── test_utils.py
 │   └── test_ai_prompt.py
-├── flashrecord-save/     # User data (auto-created)
+├── output/              # Media root (auto-created, dated subfolders)
 ├── .github/workflows/    # CI/CD
 ├── pyproject.toml        # Poetry config
 ├── README.md             # User guide
@@ -300,7 +300,7 @@ Action Handler (screenshot/video_recorder/ai_prompt)
     ↓
 File Manager (manager.py)
     ↓
-Output (flashrecord-save/)
+Output (output/<date>/screenshots|gifs|sessions)
 ```
 
 ### Configuration Flow

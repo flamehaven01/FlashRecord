@@ -171,7 +171,7 @@ class ScreenRecorder:
         }
 
 
-def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", compression="balanced"):
+def record_screen_to_gif(duration=5, fps=10, output_dir=None, compression="balanced"):
     """
     Convenience function: Record screen for duration and save as GIF
 
@@ -205,6 +205,11 @@ def record_screen_to_gif(duration=5, fps=10, output_dir="flashrecord-save", comp
     # Generate filename
     timestamp = get_timestamp()
     filename = f"screen_{timestamp}.gif"
+    if output_dir is None:
+        from .config import Config
+
+        output_dir = Config().get_output_dir("gifs")
+
     filepath = os.path.join(output_dir, filename)
 
     # Save GIF

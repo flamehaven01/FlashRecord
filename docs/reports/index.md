@@ -23,7 +23,7 @@ This section contains detailed technical reports from the development process.
 
 ### Architecture
 
-- [Development Roadmap](./.DEVELOPMENT_ROADMAP.md) (Internal)
+- [Development Roadmap](../../.DEVELOPMENT_ROADMAP.md) (Internal)
 
 ## Legacy Reports
 

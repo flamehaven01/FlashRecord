@@ -8,9 +8,9 @@ services:
     image: flamehaven/flashrecord:latest
     container_name: flashrecord
     volumes:
-      - ./flashrecord-save:/output
+      - ./output:/output
     environment:
-      - FLASHRECORD_SAVE_DIR=/output
+      - FLASHRECORD_OUTPUT_ROOT=/output
       - DISPLAY=:99
     stdin_open: true
     tty: true
@@ -26,9 +26,9 @@ services:
     container_name: flashrecord-dev
     volumes:
       - .:/app
-      - ./flashrecord-save:/output
+      - ./output:/output
     environment:
-      - FLASHRECORD_SAVE_DIR=/output
+      - FLASHRECORD_OUTPUT_ROOT=/output
       - PYTHONPATH=/app
     working_dir: /app
     command: /bin/bash

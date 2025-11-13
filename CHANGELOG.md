@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.4] - 2025-11-13
+
+### Documentation Hygiene & Automation
+
+- [+] **Doc Sanity Script**: Added `scripts/doc_sanity_check.py` to verify Markdown links and detect Hangul lines so public docs stay consistent.
+- [+] **README Guidance**: Documented how to run the new sanity script and added a comparison table versus charmbracelet/vhs plus an explanation of `AIPromptManager`.
+- [+] **English-Only Reports**: Rewrote all audit/report Markdown files in English (CI/CD notes, execution summary, install UX update, native screenshot report, improvement/patch/refactoring reports) to remove mixed-language confusion.
+- [+] **Docs Index Fix**: Corrected `docs/reports/index.md` to point at the actual `.DEVELOPMENT_ROADMAP.md`.
+- [*] **.gitignore**: Replaced Hangul-specific glob patterns with a neutral comment; language enforcement is now handled by the sanity script.
+- [*] **Validation Script**: Updated `tests_backup/validation/compare_gifs.py` messaging to be fully English for cross-locale compatibility.
+- [*] **README**: Added an “AI Prompt Logging” section describing how session journaling works and how to opt out.
+- [+] **Sphinx Wrapper**: Added `scripts/build_docs.py` to run `sphinx-build` with one command (ideal for CI).
+
+### Runtime & Storage
+
+- [+] **Structured Output Tree**: All captures now land in `output/<YYYYMMDD>/<category>/...`, making archival and cleanup trivial.
+- [+] **Environment-First Config**: New `FLASHRECORD_*` environment variables override `config.json` (including `FLASHRECORD_OUTPUT_ROOT`), keeping secrets out of disk.
+- [+] **Session Logging**: `AIPromptManager` defaults to the dated `sessions` folder, matching the new tree.
+- [*] **FileManager**: Defaults to the structured output root and still handles auto-cleanup.
+- [*] **CLI & wrapper**: `@sc`/`@sv` write to the correct category folders and surface the output root to users.
+- [*] **Docker Compose**: Binds `./output` into containers and propagates `FLASHRECORD_OUTPUT_ROOT`.
+
+### Codebase Cleanup
+
+- [-] **Legacy Compression**: Moved `compression_v032_before_patch.py` into `.archive/compression-backups` to keep `src/` focused on the current engine.
+- [+] **Vision Refresh**: Updated `VISION.md` with an executive snapshot summarizing the automation/output changes.
+
+### Tooling
+
+- [+] **Test Dependencies**: Ensured `pytest-rerunfailures`, `pytest-timeout`, `imageio`, and `pillow` are installed locally so `pytest` matches CI behavior.
+
+### Verification
+
+- `python scripts/doc_sanity_check.py`
+- `pytest`
+
 ## [0.3.3] - 2025-10-26
 
 ### Structure Refactoring - Production Standards

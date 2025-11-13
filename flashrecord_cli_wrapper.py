@@ -19,7 +19,8 @@ def execute_screenshot():
     """Execute @sc command - Take screenshot"""
     print("[*] Executing @sc - Screenshot capture...")
     config = Config()
-    result = take_screenshot(output_dir=config.save_dir)
+    screenshot_dir = config.get_output_dir("screenshots")
+    result = take_screenshot(output_dir=screenshot_dir)
 
     if result:
         print(f"[+] Screenshot saved: {result}")
@@ -35,12 +36,9 @@ def execute_screen_record(duration=5, fps=10):
     """Execute @sv command - Record screen to GIF"""
     print(f"[*] Executing @sv - Recording screen for {duration} seconds...")
     config = Config()
+    gif_dir = config.get_output_dir("gifs")
 
-    result = record_screen_to_gif(
-        duration=duration,
-        fps=fps,
-        output_dir=config.save_dir
-    )
+    result = record_screen_to_gif(duration=duration, fps=fps, output_dir=gif_dir)
 
     return result
 
